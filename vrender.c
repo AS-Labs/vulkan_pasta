@@ -69,6 +69,33 @@ void renderFrame() {
     // TODO: implement rendering logic
 }
 
+void cleanupVulkan() {
+    // TODO: Cleanup vulkan resources
+
+    // Destroy swap chain image views
+    for (int i = 0; i < 3; i++) {
+        vkDestroyImageView(device, swapChainImageViews[i], NULL);
+    }
+
+    // Destroy swap chain
+
+    // Destroy vulkan device
+    vkDestroyDevice(device, NULL);
+
+    // Destroy vulkan instance
+    vkDestroyInstance(instance, NULL);
+}
+
+// handling window resizing
+void handleWindowResize() {
+    // TODO: handle window resizing
+    
+
+    // cleanup and reinitialize vulkan resources
+    cleanupVulkan();
+    initVulkan();
+}
+
 int main() {
     initVulkan();
 
@@ -80,5 +107,8 @@ int main() {
         renderFrame();
 
     }
+
+    // cleanup vulkan resources
+    cleanupVulkan();
     return 0;
 }

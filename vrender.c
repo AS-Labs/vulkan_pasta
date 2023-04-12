@@ -54,3 +54,31 @@ void createInstance() {
     }
 }
 
+void initVulkan() {
+    createInstance();
+    // createWindow(); // pending
+    // createDevice(); // pending
+    // createSwapChainImages(); // pending
+
+    // TODO: create the vulkan resources (buffers, textures, etc..)
+}
+
+// function to render a frame
+
+void renderFrame() {
+    // TODO: implement rendering logic
+}
+
+int main() {
+    initVulkan();
+
+    // the main loop
+    while (1) {
+
+        // TODO: Handle window events
+
+        renderFrame();
+
+    }
+    return 0;
+}

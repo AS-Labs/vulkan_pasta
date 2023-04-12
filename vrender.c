@@ -1,6 +1,10 @@
+#define VK_USE_PLATFORM_XLIB_KHR // X11
 #include <stdio.h>
 #include <stdlib.h>
 #include <vulkan/vulkan.h>
+#include <string.h>
+#include <X11/Xlib.h>
+
 
 
 // defining a windows dimensions
@@ -8,6 +12,9 @@
 
 const int WIDTH = 800;
 const int HEIGHT = 600;
+
+Display* display;
+Window window;
 
 
 // the vulkan instance handle
@@ -54,9 +61,47 @@ void createInstance() {
     }
 }
 
+void createWindow() {
+    // open X display
+    display = XOpenDisplay(NULL);
+
+    if (!display) {
+        fprintf(stderr, "Failed to open X display.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Create Window
+    Window root = DefaultRootWindow(display);
+    XSetWindowAttributes windowAttributes;
+    unsigned long mask = CWEventMask;
+    windowAttributes.event_mask = ExposureMask | KeyPressMask;
+    window = XCreateWindow(display, root, 0, 0, WIDTH, HEIGHT, 0,
+            CopyFromParent, InputOutput, CopyFromParent, mask, &windowAttributes);
+    XMapWindow(display, window);
+    XFlush(display);
+}
+
+void handleWindowEvents() {
+    // Handle window events
+    XEvent event;
+    while (XCheckWindowEvent(display, window, ExposureMask | KeyPressMask,
+                &event)) {
+        switch (event.type) {
+            case Expose:
+                // TODO: handle expose event, redraw the window
+                break;
+            case KeyPress:
+                // TODO: handle key press event
+                break;
+            default:
+                break;
+        }
+    }
+}
+
 void initVulkan() {
     createInstance();
-    // createWindow(); // pending
+    createWindow();
     // createDevice(); // pending
     // createSwapChainImages(); // pending
 
@@ -99,15 +144,28 @@ void handleWindowResize() {
 int main() {
     initVulkan();
 
+    createWindow();
     // the main loop
     while (1) {
 
         // TODO: Handle window events
+        handleWindowEvents();
 
         renderFrame();
+        
+        // TODO swap buffers
+
+        // Break loop on window close event
+
+        if (!XPending(display)) {
+            break;
+        }
 
     }
 
+    // cleanup xlib resources
+    XDestroyWindow(display, window);
+    XCloseDisplay(display);
     // cleanup vulkan resources
     cleanupVulkan();
     return 0;
